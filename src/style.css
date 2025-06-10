@@ -2,7 +2,6 @@ body {
   margin: 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-color: #1e1e1e;
-  color: white;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -10,93 +9,49 @@ body {
 }
 
 .calculator {
-  background-color: #2d2d30;
-  border-radius: 12px;
-  box-shadow: 0 0 30px rgba(0, 0, 0, 0.7);
-  padding: 20px;
-  width: 340px;
-  max-width: 90vw;
+  width: 350px;
+  background-color: #2d2d2d;
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: 0 0 10px #000;
 }
 
 .display {
-  background-color: #1e1e1e;
+  background-color: #000;
   color: white;
   font-size: 2.5rem;
   text-align: right;
   padding: 20px;
-  border-radius: 10px;
-  margin-bottom: 20px;
-  word-wrap: break-word;
-  min-height: 60px;
+  border-radius: 8px;
+  margin-bottom: 10px;
 }
 
-.keypad {
+.button-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 10px;
 }
 
-.button {
-  background-color: #3b3b3d;
-  border: none;
-  border-radius: 10px;
-  font-size: 1.4rem;
-  padding: 18px;
+.btn {
+  font-size: 1.2rem;
+  padding: 20px;
+  background-color: #3a3a3a;
   color: white;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.button:hover {
-  background-color: #4d4d50;
-}
-
-.button.function {
-  background-color: #4e4e52;
-}
-
-.button.function:hover {
-  background-color: #6a6a6e;
-}
-
-.button.operator {
-  background-color: #0078d7;
-  color: white;
-}
-
-.button.operator:hover {
-  background-color: #2899f5;
-}
-
-.button.equal {
-  background-color: #107c10;
-}
-
-.button.equal:hover {
-  background-color: #159c15;
-}
-
-.memory-section {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-  margin-bottom: 10px;
-  justify-content: space-between;
-}
-
-.memory-button {
-  flex: 1;
-  font-size: 0.9rem;
-  padding: 8px;
-  background-color: #3b3b3d;
   border: none;
   border-radius: 6px;
-  color: white;
   cursor: pointer;
-  margin: 2px;
   transition: background-color 0.2s ease;
 }
 
-.memory-button:hover {
-  background-color: #4d4d50;
+.btn:hover {
+  background-color: #505050;
+}
+
+.equals {
+  background-color: #0078d4;
+  color: white;
+}
+
+.delete {
+  font-weight: bold;
 }
