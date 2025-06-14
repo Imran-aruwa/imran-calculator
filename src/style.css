@@ -1,72 +1,93 @@
 body {
   margin: 0;
+  background-color: #1e1e1e;
   font-family: "Segoe UI", sans-serif;
-  background-color: #000;
-  color: #fff;
+  color: white;
 }
 
 .calculator {
-  max-width: 360px;
-  margin: 0 auto;
-  padding: 20px;
+  width: 340px;
+  margin: 30px auto;
+  background-color: #1e1e1e;
+  border-radius: 10px;
+  padding: 1rem;
 }
 
 .header {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  font-size: 1.4rem;
-  margin-bottom: 15px;
-  font-weight: 600;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 1.2rem;
+  color: white;
 }
 
-.title {
-  font-size: 1.5rem;
+.standard-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.disk {
+  font-size: 1rem;
+}
+
+.clock {
+  font-size: 1rem;
 }
 
 .display {
   background-color: #000;
-  color: #fff;
+  color: white;
+  font-size: 2.5rem;
   text-align: right;
-  font-size: 3rem;
-  padding: 20px;
-  border: 2px solid #fff;
-  border-radius: 10px;
-  margin-bottom: 20px;
+  padding: 0.5rem;
+  border-radius: 5px;
+  border: 2px solid white;
+  margin-bottom: 0.5rem;
 }
 
-.buttons {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+.memory-row {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 4px;
+  margin-bottom: 6px;
 }
 
-.button-row {
-  display: flex;
-  gap: 10px;
-}
-
-.btn {
-  flex: 1;
-  padding: 20px;
-  font-size: 1.3rem;
+.memory {
+  font-size: 0.7rem;
+  background-color: transparent;
   border: none;
-  border-radius: 8px;
-  background-color: #222;
-  color: #fff;
+  color: #ccc;
+}
+
+.keys {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+button {
+  padding: 16px;
+  font-size: 1.2rem;
+  border-radius: 6px;
+  border: none;
+  background-color: #2d2d2d;
+  color: white;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background 0.2s;
 }
 
-.btn:hover {
-  background-color: #333;
+button:hover {
+  background-color: #444;
 }
 
-.equals {
-  background-color: #00aaff;
-  color: #fff;
+.num {
+  background-color: #3c3c3c;
+  color: white;
 }
 
-.equals:hover {
-  background-color: #008ecc;
+.equal {
+  background-color: #1e90ff;
+  color: white;
 }

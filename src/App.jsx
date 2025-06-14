@@ -1,70 +1,131 @@
 import React, { useState } from "react";
-
-const buttons = [
-  ["MC", "MR", "M+", "M−", "MS", "Mv"],
-  ["%", "CE", "C", "⌫"],
-  ["1/x", "x²", "√x", "±"],
-  ["7", "8", "9", "×"],
-  ["4", "5", "6", "−"],
-  ["1", "2", "3", "+"],
-  ["±", "0", ".", "="],
-];
-
-const isOperator = (value) => ["+", "−", "×", "÷", "="].includes(value);
+import "./style.css";
+import { FaClockRotateLeft, FaFloppyDisk } from "react-icons/fa6";
 
 export default function App() {
   const [display, setDisplay] = useState("0");
+  const [memory, setMemory] = useState(null);
 
   const handleClick = (value) => {
-    if (value === "C" || value === "CE") return setDisplay("0");
-    if (value === "⌫") return setDisplay((prev) => (prev.length > 1 ? prev.slice(0, -1) : "0"));
-    if (value === "=") return calculate();
-    if (value === "±") return setDisplay((prev) => (prev.startsWith("-") ? prev.slice(1) : "-" + prev));
-    if (value === "1/x") return setDisplay((prev) => (1 / parseFloat(prev)).toString());
-    if (value === "x²") return setDisplay((prev) => (Math.pow(parseFloat(prev), 2)).toString());
-    if (value === "√x") return setDisplay((prev) => (Math.sqrt(parseFloat(prev))).toString());
+    setDisplay((prev) => (prev === "0" ? value : prev + value));
+  };
 
-    // Basic math entry
-    if (["+", "−", "×", "÷"].includes(value)) {
-      if (isOperator(display.slice(-1))) return;
-      setDisplay((prev) => prev + " " + value + " ");
-    } else {
-      setDisplay((prev) => (prev === "0" ? value : prev + value));
+  const clearDisplay = () => setDisplay("0");
+
+  const backspace = () => {
+    setDisplay((prev) =>
+      prev.length === 1 ? "0" : prev.slice(0, -1)
+    );
+  };
+
+  const toggleSign = () => {
+    try {
+      const val = parseFloat(display);
+      if (!isNaN(val)) setDisplay((val * -1).toString());
+    } catch {
+      setDisplay("Error");
     }
   };
 
-  const calculate = () => {
+  const calculateResult = () => {
     try {
-      let expression = display.replace(/×/g, "*").replace(/−/g, "-").replace(/÷/g, "/");
-      let result = eval(expression);
-      setDisplay(result.toString());
+      setDisplay(eval(display).toString());
     } catch {
       setDisplay("Error");
+    }
+  };
+
+  const applyFunction = (func) => {
+    try {
+      let val = parseFloat(display);
+      if (isNaN(val)) return;
+      if (func === "recip") setDisplay((1 / val).toString());
+      else if (func === "square") setDisplay((val * val).toString());
+      else if (func === "sqrt") setDisplay(Math.sqrt(val).toString());
+      else if (func === "percent") setDisplay((val / 100).toString());
+    } catch {
+      setDisplay("Error");
+    }
+  };
+
+  const handleMemory = (type) => {
+    let current = parseFloat(display);
+    switch (type) {
+      case "MC":
+        setMemory(null);
+        break;
+      case "MR":
+        if (memory !== null) setDisplay(memory.toString());
+        break;
+      case "M+":
+        setMemory((prev) => (prev || 0) + current);
+        break;
+      case "M-":
+        setMemory((prev) => (prev || 0) - current);
+        break;
+      case "MS":
+        setMemory(current);
+        break;
+      case "Mv":
+        alert(`Memory: ${memory}`);
+        break;
+      default:
+        break;
     }
   };
 
   return (
     <div className="calculator">
       <div className="header">
-        <div className="menu">☰</div>
-        <div className="title">Standard</div>
-        <div className="icon">🎵</div>
+        <span className="menu">☰</span>
+        <div className="standard-label">
+          <span className="mode">Standard</span>
+          <span className="disk"><FaFloppyDisk /></span>
+        </div>
+        <span className="clock"><FaClockRotateLeft /></span>
       </div>
+
       <div className="display">{display}</div>
-      <div className="buttons">
-        {buttons.map((row, i) => (
-          <div className="button-row" key={i}>
-            {row.map((btn) => (
-              <button
-                key={btn}
-                className={`btn ${btn === "=" ? "equals" : ""}`}
-                onClick={() => handleClick(btn)}
-              >
-                {btn}
-              </button>
-            ))}
-          </div>
-        ))}
+
+      <div className="memory-row">
+        <button className="memory" onClick={() => handleMemory("MC")}>MC</button>
+        <button className="memory" onClick={() => handleMemory("MR")}>MR</button>
+        <button className="memory bold" onClick={() => handleMemory("M+")}>M+</button>
+        <button className="memory bold" onClick={() => handleMemory("M-")}>M−</button>
+        <button className="memory bold" onClick={() => handleMemory("MS")}>MS</button>
+        <button className="memory" onClick={() => handleMemory("Mv")}>Mv</button>
+      </div>
+
+      <div className="keys">
+        <button onClick={() => applyFunction("percent")}>%</button>
+        <button>CE</button>
+        <button onClick={clearDisplay}>C</button>
+        <button onClick={backspace}>⌫</button>
+
+        <button onClick={() => applyFunction("recip")}>¹∕ₓ</button>
+        <button onClick={() => applyFunction("square")}>x²</button>
+        <button onClick={() => applyFunction("sqrt")}>²√x</button>
+        <button onClick={() => handleClick("/")}>÷</button>
+
+        <button className="num" onClick={() => handleClick("7")}>7</button>
+        <button className="num" onClick={() => handleClick("8")}>8</button>
+        <button className="num" onClick={() => handleClick("9")}>9</button>
+        <button onClick={() => handleClick("*")}>×</button>
+
+        <button className="num" onClick={() => handleClick("4")}>4</button>
+        <button className="num" onClick={() => handleClick("5")}>5</button>
+        <button className="num" onClick={() => handleClick("6")}>6</button>
+        <button onClick={() => handleClick("-")}>−</button>
+
+        <button className="num" onClick={() => handleClick("1")}>1</button>
+        <button className="num" onClick={() => handleClick("2")}>2</button>
+        <button className="num" onClick={() => handleClick("3")}>3</button>
+        <button onClick={() => handleClick("+")}>+</button>
+
+        <button className="num" onClick={toggleSign}>+/−</button>
+        <button className="num" onClick={() => handleClick("0")}>0</button>
+        <button className="num" onClick={() => handleClick(".")}>.</button>
+        <button className="equal" onClick={calculateResult}>=</button>
       </div>
     </div>
   );
