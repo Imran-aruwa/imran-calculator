@@ -8,7 +8,10 @@ export default function App() {
   const [showSidebar, setShowSidebar] = useState(false);
   const [mode, setMode] = useState("Standard");
   const [showSettings, setShowSettings] = useState(false);
+  const [theme, setTheme] = useState("dark");
+  const [soundEnabled, setSoundEnabled] = useState(true);
   const sidebarRef = useRef(null);
+  const clickSound = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -20,17 +23,34 @@ export default function App() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showSidebar]);
 
+  useEffect(() => {
+    document.body.setAttribute("data-theme", theme);
+  }, [theme]);
+
+  const playClick = () => {
+    if (soundEnabled && clickSound.current) {
+      clickSound.current.currentTime = 0;
+      clickSound.current.play();
+    }
+  };
+
   const handleClick = (value) => {
+    playClick();
     setDisplay((prev) => (prev === "0" ? value : prev + value));
   };
 
-  const clearDisplay = () => setDisplay("0");
+  const clearDisplay = () => {
+    playClick();
+    setDisplay("0");
+  };
 
   const backspace = () => {
+    playClick();
     setDisplay((prev) => (prev.length === 1 ? "0" : prev.slice(0, -1)));
   };
 
   const toggleSign = () => {
+    playClick();
     try {
       const val = parseFloat(display);
       if (!isNaN(val)) setDisplay((val * -1).toString());
@@ -40,6 +60,7 @@ export default function App() {
   };
 
   const calculateResult = () => {
+    playClick();
     try {
       setDisplay(eval(display).toString());
     } catch {
@@ -48,6 +69,7 @@ export default function App() {
   };
 
   const applyFunction = (func) => {
+    playClick();
     try {
       let val = parseFloat(display);
       if (isNaN(val)) return;
@@ -69,6 +91,7 @@ export default function App() {
   };
 
   const handleMemory = (type) => {
+    playClick();
     let current = parseFloat(display);
     switch (type) {
       case "MC":
@@ -118,6 +141,7 @@ export default function App() {
   };
 
   const handleSidebarClick = (item) => {
+    playClick();
     if (item === "Settings") {
       setShowSettings(true);
     } else {
@@ -127,9 +151,11 @@ export default function App() {
   };
 
   return (
-    <div className="calculator">
+    <div className={`calculator ${theme}`}>
+      <audio ref={clickSound} src="/click.mp3" preload="auto" />
+
       <div className="header">
-        <span className="menu" onClick={() => setShowSidebar(!showSidebar)}>☰</span>
+        <span className="menu" onClick={() => { playClick(); setShowSidebar(!showSidebar); }}>☰</span>
         <div className="standard-label">
           <span className="mode">{mode}</span>
           <span className="disk"><FaFloppyDisk /></span>
@@ -196,7 +222,22 @@ export default function App() {
           <div className="modal-overlay" onClick={() => setShowSettings(false)} />
           <div className="modal">
             <h3>Settings</h3>
-            <p>(Settings content can go here)</p>
+            <label>
+              Theme: &nbsp;
+              <select value={theme} onChange={(e) => setTheme(e.target.value)}>
+                <option value="dark">Dark</option>
+                <option value="light">Light</option>
+              </select>
+            </label>
+            <br /><br />
+            <label>
+              <input
+                type="checkbox"
+                checked={soundEnabled}
+                onChange={() => setSoundEnabled(!soundEnabled)}
+              /> Enable Click Sounds
+            </label>
+            <br /><br />
             <button onClick={() => setShowSettings(false)}>Close</button>
           </div>
         </>

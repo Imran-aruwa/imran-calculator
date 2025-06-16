@@ -1,17 +1,28 @@
 body {
   margin: 0;
-  background-color: #1e1e1e;
   font-family: "Segoe UI", sans-serif;
   color: white;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+[data-theme="dark"] {
+  background-color: #1e1e1e;
+  color: white;
+}
+
+[data-theme="light"] {
+  background-color: #f2f2f2;
+  color: #222;
 }
 
 .calculator {
   width: 340px;
   margin: 30px auto;
-  background-color: #1e1e1e;
+  background-color: inherit;
   border-radius: 10px;
   padding: 1rem;
   position: relative;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
 }
 
 .header {
@@ -20,7 +31,7 @@ body {
   align-items: center;
   margin-bottom: 10px;
   font-size: 1.2rem;
-  color: white;
+  color: inherit;
 }
 
 .standard-label {
@@ -29,10 +40,7 @@ body {
   gap: 8px;
 }
 
-.disk {
-  font-size: 1rem;
-}
-
+.disk,
 .clock {
   font-size: 1rem;
 }
@@ -47,6 +55,12 @@ body {
   border: 2px solid white;
   margin-bottom: 0.5rem;
   min-height: 50px;
+}
+
+[data-theme="light"] .display {
+  background-color: #fff;
+  color: #000;
+  border-color: #ccc;
 }
 
 .memory-row {
@@ -99,7 +113,15 @@ button:hover {
   color: white;
 }
 
-/* SIDEBAR */
+[data-theme="light"] button {
+  background-color: #e0e0e0;
+  color: #000;
+}
+
+[data-theme="light"] button:hover {
+  background-color: #ccc;
+}
+
 .sidebar {
   position: absolute;
   top: 0;
@@ -111,6 +133,12 @@ button:hover {
   border-radius: 10px 0 0 10px;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
   z-index: 10;
+}
+
+[data-theme="light"] .sidebar {
+  background-color: #fff;
+  color: #000;
+  border-right: 1px solid #ccc;
 }
 
 .sidebar ul {
@@ -126,11 +154,19 @@ button:hover {
   cursor: pointer;
 }
 
+[data-theme="light"] .sidebar li {
+  color: #000;
+  border-bottom: 1px solid #ddd;
+}
+
 .sidebar li:hover {
   background-color: #3a3a3a;
 }
 
-/* MODAL */
+[data-theme="light"] .sidebar li:hover {
+  background-color: #efefef;
+}
+
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -157,6 +193,12 @@ button:hover {
   text-align: center;
 }
 
+[data-theme="light"] .modal {
+  background-color: #f9f9f9;
+  color: #222;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+
 .modal button {
   margin-top: 1rem;
   padding: 10px 20px;
@@ -170,4 +212,30 @@ button:hover {
 
 .modal button:hover {
   background-color: #555;
+}
+
+[data-theme="light"] .modal button {
+  background-color: #ddd;
+  color: #000;
+}
+
+[data-theme="light"] .modal button:hover {
+  background-color: #ccc;
+}
+
+.setting-group {
+  margin: 1rem 0;
+  text-align: left;
+}
+
+.setting-group label {
+  font-size: 1rem;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.setting-group select,
+.setting-group input[type="checkbox"] {
+  margin-top: 0.3rem;
+  font-size: 1rem;
 }
