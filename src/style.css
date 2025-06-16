@@ -11,6 +11,7 @@ body {
   background-color: #1e1e1e;
   border-radius: 10px;
   padding: 1rem;
+  position: relative;
 }
 
 .header {
@@ -45,6 +46,7 @@ body {
   border-radius: 5px;
   border: 2px solid white;
   margin-bottom: 0.5rem;
+  min-height: 50px;
 }
 
 .memory-row {
@@ -59,6 +61,11 @@ body {
   background-color: transparent;
   border: none;
   color: #ccc;
+  cursor: pointer;
+}
+
+.memory.bold {
+  font-weight: bold;
 }
 
 .keys {
@@ -90,4 +97,77 @@ button:hover {
 .equal {
   background-color: #1e90ff;
   color: white;
+}
+
+/* SIDEBAR */
+.sidebar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 200px;
+  height: 100%;
+  background-color: #2b2b2b;
+  padding: 1rem;
+  border-radius: 10px 0 0 10px;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
+  z-index: 10;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar li {
+  padding: 10px 0;
+  border-bottom: 1px solid #444;
+  color: white;
+  cursor: pointer;
+}
+
+.sidebar li:hover {
+  background-color: #3a3a3a;
+}
+
+/* MODAL */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 50;
+}
+
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #2d2d2d;
+  color: white;
+  padding: 2rem;
+  border-radius: 10px;
+  z-index: 100;
+  box-shadow: 0 0 10px rgba(0,0,0,0.8);
+  min-width: 280px;
+  max-width: 90vw;
+  text-align: center;
+}
+
+.modal button {
+  margin-top: 1rem;
+  padding: 10px 20px;
+  font-size: 1rem;
+  background-color: #444;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.modal button:hover {
+  background-color: #555;
 }
