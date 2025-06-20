@@ -1,6 +1,9 @@
+/* Base styling */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
 body {
   margin: 0;
-  font-family: "Segoe UI", sans-serif;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
   color: white;
   transition: background-color 0.3s, color 0.3s;
 }
@@ -18,13 +21,16 @@ body {
 .calculator {
   width: 340px;
   margin: 30px auto;
-  background-color: inherit;
-  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
   padding: 1rem;
   position: relative;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+/* Header */
 .header {
   display: flex;
   justify-content: space-between;
@@ -45,16 +51,18 @@ body {
   font-size: 1rem;
 }
 
+/* Display */
 .display {
   background-color: #000;
   color: white;
   font-size: 2.5rem;
   text-align: right;
-  padding: 0.5rem;
-  border-radius: 5px;
+  padding: 0.6rem 0.8rem;
+  border-radius: 12px;
   border: 2px solid white;
   margin-bottom: 0.5rem;
-  min-height: 50px;
+  min-height: 60px;
+  transition: all 0.3s ease-in-out;
 }
 
 [data-theme="light"] .display {
@@ -63,6 +71,7 @@ body {
   border-color: #ccc;
 }
 
+/* Memory Buttons */
 .memory-row {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
@@ -72,56 +81,87 @@ body {
 
 .memory {
   font-size: 0.7rem;
-  background-color: transparent;
+  background-color: #3c3c3c;
+  color: white;
   border: none;
-  color: #ccc;
+  border-radius: 6px;
+  padding: 8px 0;
   cursor: pointer;
+  transition: transform 0.1s, background-color 0.2s;
+}
+
+.memory:hover {
+  background-color: #555;
+  transform: scale(1.05);
 }
 
 .memory.bold {
   font-weight: bold;
 }
 
+/* Keypad */
 .keys {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
+  gap: 8px;
 }
 
 button {
   padding: 16px;
   font-size: 1.2rem;
-  border-radius: 6px;
+  border-radius: 12px;
   border: none;
   background-color: #2d2d2d;
   color: white;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.2s ease, transform 0.1s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 button:hover {
   background-color: #444;
+  transform: scale(1.03);
 }
 
+button:active {
+  transform: scale(0.97);
+}
+
+/* Number buttons - highlighted */
 .num {
   background-color: #3c3c3c;
   color: white;
 }
 
+/* Equals button - bright action */
 .equal {
   background-color: #1e90ff;
   color: white;
+  font-weight: bold;
 }
 
+/* Light Theme Variants */
 [data-theme="light"] button {
   background-color: #e0e0e0;
   color: #000;
+}
+
+[data-theme="light"] .num,
+[data-theme="light"] .memory {
+  background-color: #f5f5f5;
+  color: #000;
+}
+
+[data-theme="light"] .equal {
+  background-color: #2196f3;
+  color: white;
 }
 
 [data-theme="light"] button:hover {
   background-color: #ccc;
 }
 
+/* Sidebar */
 .sidebar {
   position: absolute;
   top: 0;
@@ -167,6 +207,7 @@ button:hover {
   background-color: #efefef;
 }
 
+/* Modal */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -187,7 +228,7 @@ button:hover {
   padding: 2rem;
   border-radius: 10px;
   z-index: 100;
-  box-shadow: 0 0 10px rgba(0,0,0,0.8);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
   min-width: 280px;
   max-width: 90vw;
   text-align: center;
@@ -196,7 +237,7 @@ button:hover {
 [data-theme="light"] .modal {
   background-color: #f9f9f9;
   color: #222;
-  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
 .modal button {
@@ -223,6 +264,7 @@ button:hover {
   background-color: #ccc;
 }
 
+/* Settings section */
 .setting-group {
   margin: 1rem 0;
   text-align: left;
@@ -239,7 +281,8 @@ button:hover {
   margin-top: 0.3rem;
   font-size: 1rem;
 }
-/* Font size variations */
+
+/* Font sizes */
 .font-small .display {
   font-size: 1.5rem;
 }
