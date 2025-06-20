@@ -10,8 +10,37 @@ export default function App() {
   const [showSettings, setShowSettings] = useState(false);
   const [theme, setTheme] = useState("dark");
   const [soundEnabled, setSoundEnabled] = useState(true);
+  const [fontSize, setFontSize] = useState("medium");
+  const [formatNumbers, setFormatNumbers] = useState(true);
   const sidebarRef = useRef(null);
   const clickSound = useRef(null);
+
+  const formatNumber = (value) => {
+    if (!formatNumbers || isNaN(value)) return value;
+    const [intPart, decPart] = value.toString().split(".");
+    const formatted = Number(intPart).toLocaleString();
+    return decPart != null ? `${formatted}.${decPart}` : formatted;
+  };
+
+  const unformatNumber = (value) => value.toString().replace(/,/g, "");
+
+  useEffect(() => {
+    const handleKey = (e) => {
+      const key = e.key;
+      if (/[0-9]/.test(key)) handleClick(key);
+      else if (["+", "-", "*", "/"].includes(key)) handleClick(key);
+      else if (key === "Enter" || key === "=") calculateResult();
+      else if (key === "Backspace") backspace();
+      else if (key === "Escape") clearDisplay();
+      else if (key === ".") handleClick(".");
+    };
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
+  });
+
+  useEffect(() => {
+    document.body.setAttribute("data-theme", theme);
+  }, [theme]);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -23,10 +52,6 @@ export default function App() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showSidebar]);
 
-  useEffect(() => {
-    document.body.setAttribute("data-theme", theme);
-  }, [theme]);
-
   const playClick = () => {
     if (soundEnabled && clickSound.current) {
       clickSound.current.currentTime = 0;
@@ -36,7 +61,10 @@ export default function App() {
 
   const handleClick = (value) => {
     playClick();
-    setDisplay((prev) => (prev === "0" ? value : prev + value));
+    setDisplay((prev) => {
+      const raw = unformatNumber(prev === "0" ? value : prev + value);
+      return formatNumber(raw);
+    });
   };
 
   const clearDisplay = () => {
@@ -46,23 +74,26 @@ export default function App() {
 
   const backspace = () => {
     playClick();
-    setDisplay((prev) => (prev.length === 1 ? "0" : prev.slice(0, -1)));
+    setDisplay((prev) => {
+      const raw = unformatNumber(prev);
+      const truncated = raw.length <= 1 ? "0" : raw.slice(0, -1);
+      return formatNumber(truncated);
+    });
   };
 
   const toggleSign = () => {
     playClick();
-    try {
-      const val = parseFloat(display);
-      if (!isNaN(val)) setDisplay((val * -1).toString());
-    } catch {
-      setDisplay("Error");
-    }
+    const raw = unformatNumber(display);
+    const num = parseFloat(raw);
+    if (!isNaN(num)) setDisplay(formatNumber((num * -1).toString()));
   };
 
   const calculateResult = () => {
     playClick();
     try {
-      setDisplay(eval(display).toString());
+      const raw = unformatNumber(display).replace(/×/g, "*").replace(/÷/g, "/");
+      const result = eval(raw).toString();
+      setDisplay(formatNumber(result));
     } catch {
       setDisplay("Error");
     }
@@ -70,88 +101,68 @@ export default function App() {
 
   const applyFunction = (func) => {
     playClick();
-    try {
-      let val = parseFloat(display);
-      if (isNaN(val)) return;
-      if (func === "recip") setDisplay((1 / val).toString());
-      else if (func === "square") setDisplay((val * val).toString());
-      else if (func === "sqrt") setDisplay(Math.sqrt(val).toString());
-      else if (func === "percent") setDisplay((val / 100).toString());
-      else if (func === "sin") setDisplay(Math.sin(val).toString());
-      else if (func === "cos") setDisplay(Math.cos(val).toString());
-      else if (func === "tan") setDisplay(Math.tan(val).toString());
-      else if (func === "log") setDisplay(Math.log10(val).toString());
-      else if (func === "ln") setDisplay(Math.log(val).toString());
-      else if (func === "bin") setDisplay((val >>> 0).toString(2));
-      else if (func === "hex") setDisplay((val >>> 0).toString(16).toUpperCase());
-      else if (func === "dec") setDisplay(parseInt(val).toString(10));
-    } catch {
-      setDisplay("Error");
+    const num = parseFloat(unformatNumber(display));
+    if (isNaN(num)) return;
+    let result;
+    switch (func) {
+      case "recip": result = 1 / num; break;
+      case "square": result = num * num; break;
+      case "sqrt": result = Math.sqrt(num); break;
+      case "percent": result = num / 100; break;
+      case "sin": result = Math.sin(num); break;
+      case "cos": result = Math.cos(num); break;
+      case "tan": result = Math.tan(num); break;
+      case "log": result = Math.log10(num); break;
+      case "ln": result = Math.log(num); break;
+      case "bin": result = (num >>> 0).toString(2); break;
+      case "hex": result = (num >>> 0).toString(16).toUpperCase(); break;
+      case "dec": result = parseInt(num).toString(10); break;
+      default: return;
     }
+    setDisplay(formatNumber(result.toString()));
   };
 
   const handleMemory = (type) => {
     playClick();
-    let current = parseFloat(display);
+    const num = parseFloat(unformatNumber(display));
     switch (type) {
-      case "MC":
-        setMemory(null);
-        break;
-      case "MR":
-        if (memory !== null) setDisplay(memory.toString());
-        break;
-      case "M+":
-        setMemory((prev) => (prev || 0) + current);
-        break;
-      case "M-":
-        setMemory((prev) => (prev || 0) - current);
-        break;
-      case "MS":
-        setMemory(current);
-        break;
-      case "Mv":
-        alert(`Memory: ${memory}`);
-        break;
-      default:
-        break;
+      case "MC": setMemory(null); break;
+      case "MR": if (memory != null) setDisplay(formatNumber(memory.toString())); break;
+      case "M+": setMemory((prev) => (prev || 0) + num); break;
+      case "M-": setMemory((prev) => (prev || 0) - num); break;
+      case "MS": setMemory(num); break;
+      case "Mv": alert(`Memory: ${memory}`); break;
+      default: break;
     }
   };
 
   const renderExtraButtons = () => {
     if (mode === "Scientific") {
-      return (
-        <>
-          <button title="Sine" onClick={() => applyFunction("sin")}>sin</button>
-          <button title="Cosine" onClick={() => applyFunction("cos")}>cos</button>
-          <button title="Tangent" onClick={() => applyFunction("tan")}>tan</button>
-          <button title="Log base 10" onClick={() => applyFunction("log")}>log</button>
-          <button title="Natural log" onClick={() => applyFunction("ln")}>ln</button>
-        </>
-      );
+      return <>
+        <button onClick={() => applyFunction("sin")}>sin</button>
+        <button onClick={() => applyFunction("cos")}>cos</button>
+        <button onClick={() => applyFunction("tan")}>tan</button>
+        <button onClick={() => applyFunction("log")}>log</button>
+        <button onClick={() => applyFunction("ln")}>ln</button>
+      </>;
     } else if (mode === "Programmer") {
-      return (
-        <>
-          <button title="Binary" onClick={() => applyFunction("bin")}>BIN</button>
-          <button title="Hexadecimal" onClick={() => applyFunction("hex")}>HEX</button>
-          <button title="Decimal" onClick={() => applyFunction("dec")}>DEC</button>
-        </>
-      );
+      return <>
+        <button onClick={() => applyFunction("bin")}>BIN</button>
+        <button onClick={() => applyFunction("hex")}>HEX</button>
+        <button onClick={() => applyFunction("dec")}>DEC</button>
+      </>;
     }
     return null;
   };
 
   const handleSidebarClick = (item) => {
     playClick();
-    if (item === "Settings") {
-      setShowSettings(true);
-    } else {
-      setMode(item);
-    }
+    item === "Settings" ? setShowSettings(true) : setMode(item);
     setShowSidebar(false);
   };
 
   return (
-    <div className={`calculator ${theme}`}>
+    <div className={`calculator ${theme} font-${fontSize}`}>
       <audio ref={clickSound} src="/click.mp3" preload="auto" />
 
       <div className="header">
@@ -165,23 +176,19 @@ export default function App() {
 
       {showSidebar && (
         <div className="sidebar" ref={sidebarRef}>
-          <ul>
-            {["Standard", "Scientific", "Graphing", "Programmer", "Settings"].map((item) => (
-              <li key={item} onClick={() => handleSidebarClick(item)}>{item}</li>
-            ))}
-          </ul>
+          {["Standard", "Scientific", "Graphing", "Programmer", "Settings"].map(item => (
+            <li key={item} onClick={() => handleSidebarClick(item)}>{item}</li>
+          ))}
         </div>
       )}
 
       <div className="display">{display}</div>
 
       <div className="memory-row">
-        <button className="memory" onClick={() => handleMemory("MC")}>MC</button>
-        <button className="memory" onClick={() => handleMemory("MR")}>MR</button>
-        <button className="memory bold" onClick={() => handleMemory("M+")}>M+</button>
-        <button className="memory bold" onClick={() => handleMemory("M-")}>M−</button>
-        <button className="memory bold" onClick={() => handleMemory("MS")}>MS</button>
-        <button className="memory" onClick={() => handleMemory("Mv")}>Mv</button>
+        {["MC","MR","M+","M−","MS","Mv"].map(m =>
+          <button key={m} className={`memory${["M+","M−","MS"].includes(m)? " bold": ""}`} 
+            onClick={() => handleMemory(m)}>{m}</button>
+        )}
       </div>
 
       <div className="keys">
@@ -190,27 +197,16 @@ export default function App() {
         <button>CE</button>
         <button onClick={clearDisplay}>C</button>
         <button onClick={backspace}>⌫</button>
-
         <button onClick={() => applyFunction("recip")}>¹∕ₓ</button>
         <button onClick={() => applyFunction("square")}>x²</button>
         <button onClick={() => applyFunction("sqrt")}>²√x</button>
-        <button onClick={() => handleClick("/")}>÷</button>
-
-        <button className="num" onClick={() => handleClick("7")}>7</button>
-        <button className="num" onClick={() => handleClick("8")}>8</button>
-        <button className="num" onClick={() => handleClick("9")}>9</button>
-        <button onClick={() => handleClick("*")}>×</button>
-
-        <button className="num" onClick={() => handleClick("4")}>4</button>
-        <button className="num" onClick={() => handleClick("5")}>5</button>
-        <button className="num" onClick={() => handleClick("6")}>6</button>
+        <button onClick={() => handleClick("÷")}>÷</button>
+        {["7","8","9"].map(n => <button key={n} className="num" onClick={() => handleClick(n)}>{n}</button>)}
+        <button onClick={() => handleClick("×")}>×</button>
+        {["4","5","6"].map(n => <button key={n} className="num" onClick={() => handleClick(n)}>{n}</button>)}
         <button onClick={() => handleClick("-")}>−</button>
-
-        <button className="num" onClick={() => handleClick("1")}>1</button>
-        <button className="num" onClick={() => handleClick("2")}>2</button>
-        <button className="num" onClick={() => handleClick("3")}>3</button>
+        {["1","2","3"].map(n => <button key={n} className="num" onClick={() => handleClick(n)}>{n}</button>)}
         <button onClick={() => handleClick("+")}>+</button>
-
         <button className="num" onClick={toggleSign}>+/−</button>
         <button className="num" onClick={() => handleClick("0")}>0</button>
         <button className="num" onClick={() => handleClick(".")}>.</button>
@@ -222,21 +218,24 @@ export default function App() {
           <div className="modal-overlay" onClick={() => setShowSettings(false)} />
           <div className="modal">
             <h3>Settings</h3>
-            <label>
-              Theme: &nbsp;
-              <select value={theme} onChange={(e) => setTheme(e.target.value)}>
-                <option value="dark">Dark</option>
-                <option value="light">Light</option>
+            <label>Theme: 
+              <select value={theme} onChange={e => setTheme(e.target.value)}>
+                <option value="dark">dark</option>
+                <option value="light">light</option>
               </select>
             </label>
             <br /><br />
-            <label>
-              <input
-                type="checkbox"
-                checked={soundEnabled}
-                onChange={() => setSoundEnabled(!soundEnabled)}
-              /> Enable Click Sounds
+            <label><input type="checkbox" checked={soundEnabled} onChange={() => setSoundEnabled(!soundEnabled)} /> Enable Click Sounds</label>
+            <br /><br />
+            <label>Font Size: 
+              <select value={fontSize} onChange={e => setFontSize(e.target.value)}>
+                <option value="small">small</option>
+                <option value="medium">medium</option>
+                <option value="large">large</option>
+              </select>
             </label>
+            <br /><br />
+            <label><input type="checkbox" checked={formatNumbers} onChange={() => setFormatNumbers(!formatNumbers)} /> Format Numbers</label>
             <br /><br />
             <button onClick={() => setShowSettings(false)}>Close</button>
           </div>
